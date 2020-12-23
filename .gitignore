@@ -1,2 +1,4 @@
 test.html
 notes.txt
+node_modules/
+package-lock.json
