@@ -1,23 +1,35 @@
+/**================================================== *
+ * ==========  Constants  ========== *
+ * ================================================== */
+const input = document.querySelector('.formInput');
+const addTask = document.getElementById('addBtn');
 
 /**================================================== *
- * ==========  Event  ========== *
+ * ==========  Eventlisteners  ========== *
+ * ================================================== */
+window.addEventListener('click', deleteTask);
+addTask.addEventListener('click', postTask);
+input.addEventListener('keyup', function (e) {
+	if (e.keyCode === 13) {
+		postTask(e);
+	}
+});
+
+/**================================================== *
+ * ==========  Functions  ========== *
  * ================================================== */
 
-window.addEventListener('click', deleteTask);
+/*--------  fetch data from local api  --------*/
+function fetchData() {
+	let giveMeSomethingPlease = fetch('http://localhost:3000/tasks', {
+		method: 'GET',
+		redirect: 'follow',
+	}).then((response) => response.json());
 
-
-const input = document.querySelector('.formInput')
-const addTask = document.getElementById('addBtn')
-
-
-input.addEventListener('keyup', function(e){
-	if(e.keyCode === 13){
-		postTask(e)
+	return giveMeSomethingPlease;
 }
-})
-addTask.addEventListener('click', postTask)
 
-
+/*--------  fetch api and print existing todo-data to dom  --------*/
 function printToDom() {
 	const list = document.getElementById('myUL');
 
@@ -39,31 +51,19 @@ function printToDom() {
 }
 printToDom();
 
-
-
-function fetchData() {
-	let giveMeSomethingPlease = fetch('http://localhost:3000/tasks', {
-		method: 'GET',
-		redirect: 'follow',
-	}).then((response) => response.json());
-
-	return giveMeSomethingPlease;
-}
-
-
-
+/*--------  post task to todo-list  --------*/
 function postTask(e) {
 	e.preventDefault();
 
 	inputValue = input.value;
 
+	/* if input value is not empty, proceed */
 	if (inputValue != '') {
 		fetchData().then((response) => {
-			console.log(response);
-
 			var myHeaders = new Headers();
 			myHeaders.append('Content-Type', 'application/json');
 
+			/* the code here posts the tasks */
 			fetch('http://localhost:3000/tasks', {
 				method: 'POST',
 				headers: myHeaders,
@@ -74,36 +74,33 @@ function postTask(e) {
 	}
 }
 
-
-
+/*--------  delete a task function  --------*/
 function deleteTask(e) {
 	if (e.target.classList.contains('fa-trash-alt')) {
 		fetchData().then((response) => {
 			for (let i = 0; i < response.length; i++) {
+
+				/**
+				 *
+				 * match the innerHTML (word)
+				 * with the text in json api
+				 *
+				 */
 				if (
 					e.target.previousElementSibling.innerHTML ==
 					response[i].title
 				) {
 					fetch(`http://localhost:3000/tasks/${[response[i].id]}`, {
 						method: 'DELETE',
-						headers: {
-							'Content-Type': 'application/json',
-						},
-						body: JSON.stringify({
-							id: '',
-							title: '',
-						}),
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ id: '', title: '' }),
 						redirect: 'follow',
 					}).then((response) => response.json());
 
+					/* remove the whole <li> */
 					e.target.previousElementSibling.parentElement.remove();
 				}
 			}
 		});
 	}
 }
-
-
-
-
-
