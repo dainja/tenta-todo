@@ -6,11 +6,11 @@ won't work without it.
 
 
 # usage
-clone git
-npm install
+1. clone git
+2. npm install
 (installs json-server)
 
-npm start
+3. npm start
 (starts local server at default port:3000 , watching the local db.json)
 
 now start vscode-liveserver and everything will work ezpz or not
